@@ -32,34 +32,6 @@ WORKDIR /app
 
 COPY go.mod go.mod
 COPY go.sum go.sum
-COPY cmd cmd
 COPY pkg pkg
-COPY internal internal
 
 RUN go test -v ./... -cover
-
-FROM golang:1.16 as builder
-
-RUN mkdir /app
-WORKDIR /app
-
-COPY go.mod go.mod
-COPY go.sum go.sum
-COPY cmd cmd
-COPY pkg pkg
-COPY internal internal
-
-WORKDIR /app/cmd/fip-commons
-RUN go build
-
-FROM debian:buster as release
-
-COPY --from=builder /app/cmd/fip-commons/fip-commons /fip-commons
-
-RUN groupadd -r SIGHUP && \
-    useradd -u 1001 -r -s /bin/false -g SIGHUP cloud && \
-    chown cloud:SIGHUP /fip-commons
-
-USER 1001
-
-ENTRYPOINT ["/fip-commons"]

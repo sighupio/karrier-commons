@@ -2,7 +2,6 @@ module github.com/sighupio/fip-commons
 
 go 1.16
 
-require (
-	github.com/sirupsen/logrus v1.2.0
-	github.com/spf13/cobra v1.1.3
-)
+require k8s.io/client-go v0.18.4
+
+replace k8s.io/client-go => k8s.io/client-go v0.18.14

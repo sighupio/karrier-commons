@@ -1,3 +1,3 @@
 # Examples
 
-This directory contains TBD sample deployments.
+This directory contains TBD sample usages.
