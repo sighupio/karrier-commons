@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -23,7 +22,6 @@ type KubernetesClient struct {
 
 	KubeConfig string
 	Client     kubernetes.Interface
-	Log        *log.Logger
 }
 
 // Init initializes the Kubernetes client-go.
@@ -48,17 +46,11 @@ func (kc *KubernetesClient) Init(ctx context.Context) error {
 	}
 
 	if err != nil {
-		kc.Log.Println("can not get a proper kube config")
-		kc.Log.Println(err)
-
 		return err
 	}
 	// return k8s client and err
 	client, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		kc.Log.Println("can not create kubeclient from the configuration")
-		kc.Log.Println(err)
-
 		return err
 	}
 
@@ -70,9 +62,6 @@ func (kc *KubernetesClient) Init(ctx context.Context) error {
 func (kc *KubernetesClient) inClusterConfig() (*rest.Config, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
-		kc.Log.Println("can not get in-cluster configuration")
-		kc.Log.Println(err)
-
 		return nil, err
 	}
 
@@ -85,9 +74,6 @@ func (kc *KubernetesClient) extClusterConfig() (*rest.Config, error) {
 		config, err := kc.getConfigFromFile(kubeConfigPath)
 
 		if err != nil {
-			kc.Log.Printf("can not get default kube configuration from %v\n", kubeConfigPath)
-			kc.Log.Println(err)
-
 			return nil, err
 		}
 
@@ -100,9 +86,6 @@ func (kc *KubernetesClient) extClusterConfig() (*rest.Config, error) {
 func (kc *KubernetesClient) getConfigFromFile(kubeConfigPath string) (*rest.Config, error) {
 	kubeConfigContent, err := ioutil.ReadFile(kubeConfigPath)
 	if err != nil {
-		kc.Log.Printf("can not get kube configuration from file %v\n", kubeConfigPath)
-		kc.Log.Println(err)
-
 		return nil, err
 	}
 
