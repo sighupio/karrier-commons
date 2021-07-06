@@ -28,25 +28,47 @@ The first release includes a package to solve the problem while connecting to th
 
 ### Installation
 
-The simplest way to use the tool is to install the binary from the source repo
-as follows:
+The simplest way to use this package is to download the package from the source repo as follows:
 
 * Using Go get
 
 ```sh
-$ go get github.com/sighupio/fip-commons/cmd/fip-commons
+$ go get github.com/sighupio/fip-commons
 #
 ```
 
 ### Usage
 
-TBD
+To use this library add this dependency to your `go.mod` file by running the
+`go get go get github.com/sighupio/fip-commons` command. Then, `import` it in your golang codebase and use it:
+
+```go
+package demo
+
+import (
+  "context"
+  "fmt"
+
+  "github.com/sighupio/fip-commons/pkg/kube" // Import it
+)
+
+// demo is an example implementation
+func demo(){
+  k := kube.KubernetesClient{KubeConfig: "/home/my-user/my-kubeconfig-path"}
+  k.Init()
+  ctx := context.TODO()
+  err = k.Healthz(&ctx)
+  if err != nil {
+    fmt.Println("error. cluster seems to be not healthy")
+  }
+}
+```
 
 ### Examples
 
-TBD
-fip-commons lib can be found in the `examples` directory. Follow
-the usage information in the [corresponding README](./examples/) for more info.
+This repository contains an example implementation that list namespaces using the `KubernetesClient` exposed in this
+golang package. It is available in the `examples` directory. Follow the usage information in the
+[corresponding README](./examples/) for more info.
 
 ## Developer Guide
 
