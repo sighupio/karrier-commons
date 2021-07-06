@@ -24,13 +24,6 @@ issues:
       linters:
         - dupl
         - goconst
-    - path: cmd/
-      linters:
-        - gochecknoinits
-        - lll
-    - path: cmd/fip-job-status-api/main.go
-      linters:
-        - gochecknoglobals
 linters:
   disable-all: true
   enable:
@@ -64,6 +57,7 @@ linters:
     - testpackage
     - whitespace
     - wsl
+    - revive
 
 linters-settings:
   gocyclo:
