@@ -6,7 +6,7 @@ package kube
 
 func (kc *KubernetesClient) Healthz() error {
 	path := "/healthz"
-	content, err := kc.Client.Discovery().RESTClient().Get().AbsPath(path).DoRaw(kc.ctx)
+	content, err := kc.Client.Discovery().RESTClient().Get().AbsPath(path).DoRaw(*kc.ctx)
 
 	if err != nil {
 		return err
