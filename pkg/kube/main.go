@@ -5,7 +5,6 @@
 package kube
 
 import (
-	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -18,20 +17,16 @@ import (
 
 // KubernetesClient represents the Kubernetes configuration of the project.
 type KubernetesClient struct {
-	ctx *context.Context
-
 	KubeConfig string
 	Client     kubernetes.Interface
 }
 
 // Init initializes the Kubernetes client-go.
-func (kc *KubernetesClient) Init(ctx *context.Context) error {
+func (kc *KubernetesClient) Init() error {
 	var (
 		config *rest.Config
 		err    error
 	)
-
-	kc.ctx = ctx
 
 	if kc.KubeConfig != "" {
 		config, err = kc.getConfigFromFile(kc.KubeConfig)
