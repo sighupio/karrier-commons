@@ -21,13 +21,13 @@ func (kc *KubernetesClient) GetService(svcName string,
 
 func (kc *KubernetesClient) GetEndpoints(service *corev1.Service,
 	namespace string) (*corev1.Endpoints, error) {
-
-	// Retrive all the endpoints corresponding to the service
+	// Retrieve all the endpoints corresponding to the service
 	// Name of the endpoint will always match that of the svc
 	endpoint, err := kc.Client.CoreV1().Endpoints(namespace).Get(context.TODO(),
 		service.Name, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
+
 	return endpoint, err
 }
