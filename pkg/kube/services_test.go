@@ -17,7 +17,7 @@ func TestGetService(t *testing.T) {
 	fakeKC := &KubernetesClient{Client: fake.NewSimpleClientset(svcObj)}
 
 	// Get service of name `mySvc` in ns `myNs`. Should not be err
-	svc, err01 := fakeKC.GetServices("mySvc", "myNs")
+	svc, err01 := fakeKC.GetService("mySvc", "myNs")
 	if svc.Name != "mySvc" {
 		t.Fatal(err01.Error())
 	}
@@ -26,13 +26,13 @@ func TestGetService(t *testing.T) {
 	}
 
 	// Test 02 Get service of name `invalidSvc` in ns `myNs`. Should be err
-	_, err02 := fakeKC.GetServices("invalidSvc", "myNs")
+	_, err02 := fakeKC.GetService("invalidSvc", "myNs")
 	if err02 == nil {
 		t.Fatal("Test 02 failed. invalidSvc should not be found in myNs")
 	}
 
 	// Test 03 Get service of name `mySvc` in ns `invalidNs`. Should be err
-	_, err03 := fakeKC.GetServices("mySvc", "invalidNs")
+	_, err03 := fakeKC.GetService("mySvc", "invalidNs")
 	if err03 == nil {
 		t.Fatal("Test 03 failed. mySvc should not be found in invalidNs")
 	}

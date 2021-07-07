@@ -11,7 +11,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func (kc *KubernetesClient) GetServices(svcName string,
+func (kc *KubernetesClient) GetService(svcName string,
 	namespace string) (*corev1.Service, error) {
 	service, err := kc.Client.CoreV1().Services(namespace).Get(context.TODO(),
 		svcName, metav1.GetOptions{})
