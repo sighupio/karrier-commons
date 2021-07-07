@@ -11,6 +11,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// nolint:typecheck
 func (kc *KubernetesClient) GetService(svcName string,
 	namespace string) (*corev1.Service, error) {
 	service, err := kc.Client.CoreV1().Services(namespace).Get(context.TODO(),
@@ -19,6 +20,7 @@ func (kc *KubernetesClient) GetService(svcName string,
 	return service, err
 }
 
+// nolint:typecheck
 func (kc *KubernetesClient) GetEndpoints(service *corev1.Service,
 	namespace string) (*corev1.Endpoints, error) {
 	// Retrieve all the endpoints corresponding to the service
