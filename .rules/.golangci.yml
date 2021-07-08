@@ -31,6 +31,7 @@ linters:
     - asciicheck
     - dogsled
     - dupl
+    - exportloopref
     - funlen
     - gci
     - gochecknoglobals
@@ -53,7 +54,6 @@ linters:
     - nlreturn
     - nolintlint
     - prealloc
-    - scopelint
     - testpackage
     - whitespace
     - wsl
