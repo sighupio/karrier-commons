@@ -12,20 +12,20 @@ import (
 )
 
 // nolint:typecheck
-func (kc *KubernetesClient) GetService(svcName string,
+func (kc *KubernetesClient) GetService(ctx *context.Context, svcName string,
 	namespace string) (*corev1.Service, error) {
-	service, err := kc.Client.CoreV1().Services(namespace).Get(context.TODO(),
+	service, err := kc.Client.CoreV1().Services(namespace).Get(*ctx,
 		svcName, metav1.GetOptions{})
 
 	return service, err
 }
 
 // nolint:typecheck
-func (kc *KubernetesClient) GetEndpoints(service *corev1.Service,
+func (kc *KubernetesClient) GetEndpoints(ctx *context.Context, service *corev1.Service,
 	namespace string) (*corev1.Endpoints, error) {
 	// Retrieve all the endpoints corresponding to the service
 	// Name of the endpoint will always match that of the svc
-	endpoint, err := kc.Client.CoreV1().Endpoints(namespace).Get(context.TODO(),
+	endpoint, err := kc.Client.CoreV1().Endpoints(namespace).Get(*ctx,
 		service.Name, metav1.GetOptions{})
 	if err != nil {
 		return nil, err

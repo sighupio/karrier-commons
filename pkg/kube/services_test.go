@@ -5,6 +5,7 @@
 package kube
 
 import (
+    "context"
 	"testing"
 
 	corev1 "k8s.io/api/core/v1"
@@ -17,7 +18,8 @@ func TestGetService(t *testing.T) {
 	fakeKC := &KubernetesClient{Client: fake.NewSimpleClientset(svcObj)}
 
 	// Get service of name `mySvc` in ns `myNs`. Should not be err
-	svc, err01 := fakeKC.GetService("mySvc", "myNs")
+	var ctx context.Context
+	svc, err01 := fakeKC.GetService(&ctx, "mySvc", "myNs")
 	if svc.Name != "mySvc" {
 		t.Fatal(err01.Error())
 	}
@@ -26,19 +28,20 @@ func TestGetService(t *testing.T) {
 	}
 
 	// Test 02 Get service of name `invalidSvc` in ns `myNs`. Should be err
-	_, err02 := fakeKC.GetService("invalidSvc", "myNs")
+	_, err02 := fakeKC.GetService(&ctx, "invalidSvc", "myNs")
 	if err02 == nil {
 		t.Fatal("Test 02 failed. invalidSvc should not be found in myNs")
 	}
 
 	// Test 03 Get service of name `mySvc` in ns `invalidNs`. Should be err
-	_, err03 := fakeKC.GetService("mySvc", "invalidNs")
+	_, err03 := fakeKC.GetService(&ctx, "mySvc", "invalidNs")
 	if err03 == nil {
 		t.Fatal("Test 03 failed. mySvc should not be found in invalidNs")
 	}
 }
 
 func TestGetEndpoints(t *testing.T) {
+	var ctx context.Context
 	labels := make(map[string]string)
 	labels["app"] = "sample"
 	labels02 := make(map[string]string)
@@ -59,7 +62,7 @@ func TestGetEndpoints(t *testing.T) {
 
 	// Test 06 Get the endpoints corresponsponding to svc in namespace
 	// `myNs`. should not be err
-	_, err06 := fakeKC.GetEndpoints(svcObj, "myNs")
+	_, err06 := fakeKC.GetEndpoints(&ctx, svcObj, "myNs")
 	if err06 != nil {
 		t.Fatal(err06)
 	}
