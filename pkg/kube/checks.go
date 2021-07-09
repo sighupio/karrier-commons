@@ -6,7 +6,6 @@ package kube
 
 import "context"
 
-// nolint:typecheck
 func (kc *KubernetesClient) Healthz(ctx *context.Context) error {
 	path := "/healthz"
 	content, err := kc.Client.Discovery().RESTClient().Get().AbsPath(path).DoRaw(*ctx)
