@@ -17,6 +17,14 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
+const (
+	// KfipBaseLabel use this label as base of other labels like check or group.
+	KfipBaseLabel = "kfip.sighup.io"
+
+	// AppBaseLabel use this label as base of other labels like name or component.
+	AppBaseLabel = "app.kubernetes.io"
+)
+
 // KubernetesClient represents the Kubernetes configuration of the project.
 type KubernetesClient struct {
 	KubeConfig      string
