@@ -20,6 +20,8 @@ steps:
         apk add make bash util-linux
       - &target
         make $${DRONE_STEP_NAME}
+      - &clean-target
+        make clean-$${DRONE_STEP_NAME}
 
   - <<: *docker-test
     name: lint

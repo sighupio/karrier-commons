@@ -21,6 +21,7 @@ $ make
   lint            Run the policeman over the repository
   test            Run unit testing
   license         Check license headers are in-place in all files in the project
+  clean-%         Clean the container image resulting from another target. make build clean-build
 
 ```
 
@@ -51,44 +52,6 @@ It automates the configuration of the drone project with a single command, it re
 If you don't have it, read more about how to set up it manually
 [in the docs](https://github.com/sighupio/fip-commons)
 
-### build
-
-This project has been developed using some awesome features from `docker`. With the same
-[`Dockerfile`](build/builder/Dockerfile) you'll be able to `build` the project and [`test`](#test) it locally among
-other automation.
-
-If you are adding more directories than the default ones to the project, you'll need to specify them in the
-[`Dockerfile`](build/builder/Dockerfile):
-
-```Dockerfile
-.
-..
-...
-RUN go test ./...
-
-FROM golang:1.16 as builder
-
-RUN mkdir /app
-WORKDIR /app
-
-COPY go.mod go.mod
-COPY go.sum go.sum
-COPY cmd cmd
-COPY pkg pkg
-COPY internal internal
-
-WORKDIR /app/cmd/fip-commons
-RUN go build
-
-FROM debian:buster as release
-...
-..
-.
-```
-
-Same with the build command, if you need to specify some golang flags to the `build` command, this is the right place
-where to customize it.
-
 ### lint
 
 This `make` target makes easy check if the (company-wide) linter pass or not. This is a basic requirement in order to
@@ -99,11 +62,6 @@ The `lint` target uses the
 to check if everything is fine.
 
 This project contains [a couple of additional linter rules](.rules) that has been tested in a real environment.
-
-### build-release
-
-`build-release` target creates a ready to run container image. It gets the `build` output binary, adding to a
-`debian:buster` container image base.
 
 ### test
 
@@ -130,7 +88,7 @@ COPY cmd cmd
 COPY pkg pkg
 COPY internal internal
 
-RUN go test ./...
+RUN go test -v ./... -cover
 
 FROM golang:1.16 as builder
 
@@ -158,27 +116,19 @@ Then, you'll be able to re-check the `license` again:
 make license
 ```
 
-### e2e-test
+### clean-%v
 
-`e2e-test` target has been designed to create a local *(and easy)* cluster using
-[`kind`](https://github.com/kubernetes-sigs/kind). Then runs e2e tests on top of the cluster.
-Test runs using [`bats`](https://github.com/bats-core/bats-core). Some basic tests have been designed in order to
-make simple extend with the right e2e-tests.
+The `clean-%v` target has been designed to remove the local built image resulting from the different targets in the
+[`Makefile`](Makefile).
 
-Add your own tests [here](scripts/e2e/tests.sh).
+The main reason to implement this target is to save disk space.
 
-### publish
+Example usages:
 
-The `publish` make target is used only to build the container image (`make build-release`) then push to the registry.
-In order to use this target you may need to specify a set of variables:
-
-- **`REGISTRY`**: Registry endpoint where the resulting container image will be pushed.
-- **`REGISTRY_USER`**: User of the `REGISTRY`
-- **`REGISTRY_PASSWORD`**: Password for the `REGISTRY_USER` @ `REGISTRY`
-
-```bash
-REGISTRY_USER=angelbarrera92 IMAGE_TAG=latest IMAGE_NAME=sighupio/fip-commons REGISTRY_PASSWORD=supersuperrarepasswordeh REGISTRY=registry.sighup.io make publish
-```
+- `make build clean-build`
+- `make lint clean-lint`
+- `make license clean-license`
+- `make test clean-test`
 
 ## Pipeline
 
@@ -189,12 +139,6 @@ It executes on every action to the Git Repository:
 - `license`. It checks for the license headers.
 - `lint`. It checks for common linting rules.
 - `test`. It runs the tests of the project.
-- `build`. This one executes the build of the project.
-- `e2e-test`. Executes the e2e tests of the project.
-
-Then, on every event **except for a PR**:
-
-- `publish`: It creates a container image with the `unstable` tag.
 
 And finally, if the repo got a new `tag`:
 

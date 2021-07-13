@@ -40,3 +40,7 @@ test: check-docker
 ## license: Check license headers are in-place in all files in the project
 license: check-docker
 	@docker build --no-cache --pull --target license -f build/builder/Dockerfile -t ${PROJECTNAME}:local-license .
+
+## clean-%: Clean the container image resulting from another target. make build clean-build
+clean-%:
+	@docker rmi -f ${PROJECTNAME}:local-${*}
