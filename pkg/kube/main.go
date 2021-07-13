@@ -31,6 +31,7 @@ type KubernetesClient struct {
 	Client          kubernetes.Interface
 	DynClient       dynamic.Interface
 	DiscoveryClient *discovery.DiscoveryClient
+	config          *rest.Config
 }
 
 // Init initializes the Kubernetes client-go.
@@ -55,6 +56,9 @@ func (kc *KubernetesClient) Init() error {
 	if err != nil {
 		return err
 	}
+
+	kc.config = config
+
 	// return k8s client and err
 	client, err := kubernetes.NewForConfig(config)
 	if err != nil {
@@ -78,6 +82,11 @@ func (kc *KubernetesClient) Init() error {
 	kc.DiscoveryClient = dis
 
 	return nil
+}
+
+// Config returns the rest configuration to the Kubernetes API.
+func (kc *KubernetesClient) Config() *rest.Config {
+	return kc.config
 }
 
 func (kc *KubernetesClient) inClusterConfig() (*rest.Config, error) {
