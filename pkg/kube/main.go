@@ -10,6 +10,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"k8s.io/client-go/discovery"
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -17,8 +19,10 @@ import (
 
 // KubernetesClient represents the Kubernetes configuration of the project.
 type KubernetesClient struct {
-	KubeConfig string
-	Client     kubernetes.Interface
+	KubeConfig      string
+	Client          kubernetes.Interface
+	DynClient       dynamic.Interface
+	DiscoveryClient *discovery.DiscoveryClient
 }
 
 // Init initializes the Kubernetes client-go.
@@ -50,6 +54,20 @@ func (kc *KubernetesClient) Init() error {
 	}
 
 	kc.Client = client
+
+	dyn, err := dynamic.NewForConfig(config)
+	if err != nil {
+		return err
+	}
+
+	kc.DynClient = dyn
+
+	dis, err := discovery.NewDiscoveryClientForConfig(config)
+	if err != nil {
+		return err
+	}
+
+	kc.DiscoveryClient = dis
 
 	return nil
 }
