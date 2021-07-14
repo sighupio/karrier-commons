@@ -14,6 +14,16 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 )
 
+// GetJob returns the job by namespace and name.
+func GetJob(ctx context.Context, kc *kube.KubernetesClient, namespace string, name string) (*batchv1.Job, error) {
+	job, err := kc.Client.BatchV1().Jobs(namespace).Get(ctx, name, v1.GetOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	return job, nil
+}
+
 // GetPodsfromJob returns a list of Pods from a specific job.
 func GetPodsfromJob(ctx context.Context, kc *kube.KubernetesClient, job batchv1.Job) ([]corev1.Pod, error) {
 	labelSelector := v1.LabelSelector{MatchLabels: map[string]string{"job-name": job.Name}}

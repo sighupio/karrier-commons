@@ -105,3 +105,68 @@ func TestGetPodsfromJob(t *testing.T) {
 		})
 	}
 }
+
+func TestGetJob(t *testing.T) {
+	backoff := int32(4)
+	job1 := batchv1.Job{
+		TypeMeta: v1.TypeMeta{},
+		ObjectMeta: v1.ObjectMeta{
+			Name:      "hello",
+			Namespace: "default",
+		},
+		Spec: batchv1.JobSpec{
+			BackoffLimit: &backoff,
+		},
+		Status: batchv1.JobStatus{},
+	}
+	type args struct {
+		ctx       context.Context
+		kc        *kube.KubernetesClient
+		namespace string
+		name      string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *batchv1.Job
+		wantErr bool
+	}{
+		{
+			name: "Not Found error",
+			args: args{
+				ctx: context.TODO(),
+				kc: &kube.KubernetesClient{
+					Client: fake.NewSimpleClientset(),
+				},
+				namespace: "default",
+				name:      "hello",
+			},
+			want:    nil,
+			wantErr: true,
+		}, {
+			name: "Found",
+			args: args{
+				ctx: context.TODO(),
+				kc: &kube.KubernetesClient{
+					Client: fake.NewSimpleClientset(&job1),
+				},
+				namespace: "default",
+				name:      "hello",
+			},
+			want:    &job1,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := GetJob(tt.args.ctx, tt.args.kc, tt.args.namespace, tt.args.name)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetJob() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetJob() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
