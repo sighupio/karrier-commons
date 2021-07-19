@@ -6,9 +6,11 @@ package jobs
 
 import (
 	"context"
+	"errors"
 
 	"github.com/sighupio/fip-commons/pkg/kube"
 	batchv1 "k8s.io/api/batch/v1"
+	batchv1beta1 "k8s.io/api/batch/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -41,4 +43,26 @@ func GetPodsfromJob(ctx context.Context, kc *kube.KubernetesClient, job batchv1.
 	}
 
 	return make([]corev1.Pod, 0), nil
+}
+
+// GetCronJobFromJob returns the parent cronjob of the job.
+func GetCronJobFromJob(ctx context.Context, kc *kube.KubernetesClient, job batchv1.Job) (*batchv1beta1.CronJob, error) {
+	if len(job.OwnerReferences) == 0 {
+		return nil, errors.New("job does not belongs to a cronjob")
+	}
+
+	var cronJobName string
+
+	for _, or := range job.OwnerReferences {
+		if or.Kind == "CronJob" {
+			cronJobName = or.Name
+		}
+	}
+
+	cj, err := kc.Client.BatchV1beta1().CronJobs(job.Namespace).Get(ctx, cronJobName, v1.GetOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	return cj, nil
 }
