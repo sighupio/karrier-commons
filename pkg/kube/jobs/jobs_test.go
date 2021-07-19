@@ -11,6 +11,7 @@ import (
 
 	"github.com/sighupio/fip-commons/pkg/kube"
 	batchv1 "k8s.io/api/batch/v1"
+	batchv1beta1 "k8s.io/api/batch/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes/fake"
@@ -166,6 +167,73 @@ func TestGetJob(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetJob() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetCronJobFromJob(t *testing.T) {
+	backoff := int32(4)
+	job1 := batchv1.Job{
+		TypeMeta: v1.TypeMeta{},
+		ObjectMeta: v1.ObjectMeta{
+			Name:      "hello-12345",
+			Namespace: "default",
+			OwnerReferences: []v1.OwnerReference{
+				{
+					Kind: "CronJob",
+					Name: "hello",
+				},
+			},
+		},
+		Spec: batchv1.JobSpec{
+			BackoffLimit: &backoff,
+		},
+		Status: batchv1.JobStatus{},
+	}
+	cronjob1 := batchv1beta1.CronJob{
+		TypeMeta: v1.TypeMeta{},
+		ObjectMeta: v1.ObjectMeta{
+			Name:      "hello",
+			Namespace: "default",
+		},
+		Spec: batchv1beta1.CronJobSpec{
+			Schedule: "* * * * *",
+		},
+		Status: batchv1beta1.CronJobStatus{},
+	}
+	type args struct {
+		ctx context.Context
+		kc  *kube.KubernetesClient
+		job batchv1.Job
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *batchv1beta1.CronJob
+		wantErr bool
+	}{
+		{
+			name: "Simple",
+			args: args{
+				ctx: context.TODO(),
+				kc: &kube.KubernetesClient{
+					Client: fake.NewSimpleClientset(&job1, &cronjob1),
+				},
+				job: job1,
+			},
+			want: &cronjob1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := GetCronJobFromJob(tt.args.ctx, tt.args.kc, tt.args.job)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetCronJobFromJob() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetCronJobFromJob() = %v, want %v", got, tt.want)
 			}
 		})
 	}
