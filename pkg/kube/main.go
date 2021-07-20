@@ -30,7 +30,7 @@ type KubernetesClient struct {
 	KubeConfig      string
 	Client          kubernetes.Interface
 	DynClient       dynamic.Interface
-	DiscoveryClient *discovery.DiscoveryClient
+	DiscoveryClient discovery.DiscoveryInterface
 	config          *rest.Config
 }
 
