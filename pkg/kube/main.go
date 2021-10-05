@@ -42,10 +42,13 @@ func (kc *KubernetesClient) Init() error {
 		err    error
 	)
 
+	log.Info("I am here")
 	if kc.KubeConfig != "" {
+		log.Info("kubeconfig is not empty")
 		config, err = kc.getConfigFromFile(kc.KubeConfig)
 	} else {
 		// if no kubeconfigfile is provided creates the in-cluster config
+		log.Info("try incluster")
 		config, err = kc.inClusterConfig()
 
 		if err != nil {
@@ -58,6 +61,7 @@ func (kc *KubernetesClient) Init() error {
 	}
 
 	if err != nil {
+		log.Errorf("here is an error", err)
 		return err
 	}
 
