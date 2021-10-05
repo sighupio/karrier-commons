@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
+	log "github.com/sirupsen/logrus"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
@@ -48,7 +49,10 @@ func (kc *KubernetesClient) Init() error {
 		config, err = kc.inClusterConfig()
 
 		if err != nil {
+			log.Errorf("In-cluster config failed with err: %s", err)
+
 			// If inCluster config does not work, try with the default kube config path
+			log.Info("Trying to connect to cluster using default kubeconfig(`.kube/config`)")
 			config, err = kc.extClusterConfig()
 		}
 	}
