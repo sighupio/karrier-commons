@@ -56,11 +56,12 @@ type Component struct {
 }
 
 type Resource struct {
-	Kind       string      `json:"kind"`
-	Name       string      `json:"name"`
-	Namespace  string      `json:"namespace"`
-	APIVersion string      `json:"apiVersion"`
-	Containers []Container `json:"containers"`
+	Kind        string              `json:"kind"`
+	Name        string              `json:"name"`
+	Namespace   string              `json:"namespace"`
+	APIVersion  string              `json:"apiVersion"`
+	Containers  []Container         `json:"containers"`
+	ExtraFields []map[string]string `json:"extra_fields"`
 }
 
 type Container struct {
