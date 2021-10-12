@@ -7,8 +7,13 @@ type KFDRelease struct {
 }
 
 type Module struct {
+	Name    string `json:"name"`
 	Version string `json:"version"`
-	Name    string `json:"release_date"`
+}
+
+type ModuleRelease struct {
+	Version     string `json:"version"`
+	ReleaseDate string `json:"release_date"`
 }
 
 type KFDReleaseDef struct {
@@ -23,7 +28,7 @@ type KFDReleaseDef struct {
 }
 
 type KFDModuleReleaseDef struct {
-	Name                   string                `json:"name"`
+	Module                 string                `json:"module"`
 	Description            string                `json:"description"`
 	Version                string                `json:"version"`
 	ReleaseDate            string                `json:"release_date"`
