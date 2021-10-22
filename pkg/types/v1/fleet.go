@@ -10,16 +10,15 @@ type ClusterInfo struct {
 
 type Endpoints struct {
 	BaseURL string `json:"baseUrl" bson:"baseUrl"`
-	Paths   Paths  `json:"paths" bson:"paths"`
+	Paths   []Path `json:"paths" bson:"paths"`
 }
 
-type Paths struct {
-	ClusterMetadata     string `json:"clusterMetadata" bson:"clusterMetadata"`
-	FuryMetadata        string `json:"furyMetadata" bson:"furyMetadata"`
-	ApplicationMetadata string `json:"applicationMetadata" bson:"applicationMetadata"`
+type Path struct {
+	Name     string `json:"name" bson:"name"`
+	Endpoint string `json:"endpoint" bson:"endpoint"`
 }
 
 type MongoTarget struct {
-	TargetName string `json:"targetName" bson:"targetName"`
+	TargetName string `json:"name" bson:"name"`
 	Collection string `json:"collection" bson:"collection"`
 }
