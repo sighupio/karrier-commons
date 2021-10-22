@@ -51,7 +51,7 @@ type ClusterDataHardwareInfo struct {
 }
 
 type ClusterData struct {
-	Id                     *primitive.ObjectID      `bson:"_id,omitempty" json:"id"`
+	Id                     string                   `bson:"_id,omitempty" json:"id"`
 	Name                   string                   `bson:"name" json:"name"`
 	Slug                   string                   `bson:"slug" json:"slug"`
 	Provider               string                   `bson:"provider" json:"provider"`
@@ -83,7 +83,7 @@ type ClusterGroupCluster struct {
 }
 
 type ClusterGroup struct {
-	Id       *primitive.ObjectID   `bson:"_id,omitempty" json:"id"`
+	Id       string                `bson:"_id,omitempty" json:"id"`
 	Name     string                `bson:"name" json:"name"`
 	Clusters []ClusterGroupCluster `bson:"clusters" json:"clusters"`
 }
