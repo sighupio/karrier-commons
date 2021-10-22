@@ -22,3 +22,68 @@ type MongoTarget struct {
 	TargetName string `json:"name" bson:"name"`
 	Collection string `json:"collection" bson:"collection"`
 }
+
+type ClusterDataUsefulLinks struct {
+	Name string `bson:"name" json:"name"`
+	Url  string `bson:"url" json:"url"`
+}
+
+type ClusterDataContacts struct {
+	Fullname string `bson:"fullname" json:"fullname"`
+	Email    string `bson:"email" json:"email"`
+	Phone    string `bson:"phone" json:"phone"`
+	OnCall   bool   `bson:"onCall" json:"onCall"`
+}
+
+type ClusterDataFuryModules struct {
+	Name    string `bson:"name" json:"name"`
+	Version string `bson:"version" json:"version"`
+}
+
+type ClusterDataFury struct {
+	Version string                   `bson:"version" json:"version"`
+	Modules []ClusterDataFuryModules `bson:"modules" json:"modules"`
+}
+
+type ClusterDataHardwareInfo struct {
+	Quantity int    `bson:"quantity" json:"quantity"`
+	Unit     string `bson:"unit" json:"unit"`
+}
+
+type ClusterData struct {
+	Id                     *primitive.ObjectID      `bson:"_id,omitempty" json:"id"`
+	Name                   string                   `bson:"name" json:"name"`
+	Slug                   string                   `bson:"slug" json:"slug"`
+	Provider               string                   `bson:"provider" json:"provider"`
+	PkiCertExpirationDate  string                   `bson:"pkiCertExpirationDate" json:"pkiCertExpirationDate"`
+	EtcdCertExpirationDate string                   `bson:"etcdCertExpirationDate" json:"etcdCertExpirationDate"`
+	KubernetesVersion      string                   `bson:"kubernetesVersion" json:"kubernetesVersion"`
+	Os                     string                   `bson:"os" json:"os"`
+	ContainerRuntime       string                   `bson:"containerRuntime" json:"containerRuntime"`
+	Cpu                    ClusterDataHardwareInfo  `bson:"cpu" json:"cpu"`
+	Ram                    ClusterDataHardwareInfo  `bson:"ram" json:"ram"`
+	WorkerNodes            int                      `bson:"workerNodes" json:"workerNodes"`
+	OnCall                 bool                     `bson:"onCall" json:"onCall"`
+	UsefulLinks            []ClusterDataUsefulLinks `bson:"usefulLinks" json:"usefulLinks"`
+	Contacts               []ClusterDataContacts    `bson:"contacts" json:"contacts"`
+	Fury                   ClusterDataFury          `bson:"fury" json:"fury"`
+}
+
+type ClusterGroupClusterStatus struct {
+	Name          string `bson:"name" json:"name"`
+	LastUpdatedAt string `bson:"lastUpdatedAt" json:"lastUpdatedAt"`
+}
+
+type ClusterGroupCluster struct {
+	Name        string                    `bson:"name" json:"name"`
+	Slug        string                    `bson:"slug" json:"slug"`
+	Provider    string                    `bson:"provider" json:"provider"`
+	Environment string                    `bson:"environment" json:"environment"`
+	Status      ClusterGroupClusterStatus `bson:"status" json:"status"`
+}
+
+type ClusterGroup struct {
+	Id       *primitive.ObjectID   `bson:"_id,omitempty" json:"id"`
+	Name     string                `bson:"name" json:"name"`
+	Clusters []ClusterGroupCluster `bson:"clusters" json:"clusters"`
+}
