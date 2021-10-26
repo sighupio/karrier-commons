@@ -6,7 +6,7 @@ package v1
 
 type ClusterInfo struct {
 	Name      string        `json:"name" bson:"name"`
-	ID        string        `json:"id" bson:"_id"`
+	ID        string        `json:"id" bson:"_id,omitempty"`
 	Slug      string        `json:"slug" bson:"slug"`
 	Endpoints Endpoints     `json:"apis" bson:"apis"`
 	Targets   []MongoTarget `json:"targets" bson:"targets"`
