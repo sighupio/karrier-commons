@@ -27,26 +27,26 @@ type MongoTarget struct {
 	Collection string `json:"collection" bson:"collection"`
 }
 
-type ClusterDataUsefulLinks struct {
+type ClusterDataUsefulLink struct {
 	Name string `bson:"name" json:"name"`
 	Url  string `bson:"url" json:"url"`
 }
 
-type ClusterDataContacts struct {
+type ClusterDataContact struct {
 	Fullname string `bson:"fullname" json:"fullname"`
 	Email    string `bson:"email" json:"email"`
 	Phone    string `bson:"phone" json:"phone"`
 	OnCall   bool   `bson:"onCall" json:"onCall"`
 }
 
-type ClusterDataFuryModules struct {
+type ClusterDataFuryModule struct {
 	Name    string `bson:"name" json:"name"`
 	Version string `bson:"version" json:"version"`
 }
 
 type ClusterDataFury struct {
-	Version string                   `bson:"version" json:"version"`
-	Modules []ClusterDataFuryModules `bson:"modules" json:"modules"`
+	Version string                  `bson:"version" json:"version"`
+	Modules []ClusterDataFuryModule `bson:"modules" json:"modules"`
 }
 
 type ClusterDataHardwareInfo struct {
@@ -55,30 +55,24 @@ type ClusterDataHardwareInfo struct {
 }
 
 type ClusterData struct {
-	Id                     string                   `bson:"_id,omitempty" json:"id"`
-	Name                   string                   `bson:"name" json:"name"`
-	Slug                   string                   `bson:"slug" json:"slug"`
-	Provider               string                   `bson:"provider" json:"provider"`
-	PkiCertExpirationDate  string                   `bson:"pkiCertExpirationDate" json:"pkiCertExpirationDate"`
-	EtcdCertExpirationDate string                   `bson:"etcdCertExpirationDate" json:"etcdCertExpirationDate"`
-	KubernetesVersion      string                   `bson:"kubernetesVersion" json:"kubernetesVersion"`
-	Os                     string                   `bson:"os" json:"os"`
-	ContainerRuntime       string                   `bson:"containerRuntime" json:"containerRuntime"`
-	Cpu                    ClusterDataHardwareInfo  `bson:"cpu" json:"cpu"`
-	Ram                    ClusterDataHardwareInfo  `bson:"ram" json:"ram"`
-	WorkerNodes            int                      `bson:"workerNodes" json:"workerNodes"`
-	OnCall                 bool                     `bson:"onCall" json:"onCall"`
-	UsefulLinks            []ClusterDataUsefulLinks `bson:"usefulLinks" json:"usefulLinks"`
-	Contacts               []ClusterDataContacts    `bson:"contacts" json:"contacts"`
-	Fury                   ClusterDataFury          `bson:"fury" json:"fury"`
+	Id                     string                  `bson:"_id,omitempty" json:"id"`
+	Name                   string                  `bson:"name" json:"name"`
+	Slug                   string                  `bson:"slug" json:"slug"`
+	Provider               string                  `bson:"provider" json:"provider"`
+	PkiCertExpirationDate  string                  `bson:"pkiCertExpirationDate" json:"pkiCertExpirationDate"`
+	EtcdCertExpirationDate string                  `bson:"etcdCertExpirationDate" json:"etcdCertExpirationDate"`
+	KubernetesVersion      string                  `bson:"kubernetesVersion" json:"kubernetesVersion"`
+	Os                     string                  `bson:"os" json:"os"`
+	ContainerRuntime       string                  `bson:"containerRuntime" json:"containerRuntime"`
+	Cpu                    ClusterDataHardwareInfo `bson:"cpu" json:"cpu"`
+	Ram                    ClusterDataHardwareInfo `bson:"ram" json:"ram"`
+	WorkerNodes            int                     `bson:"workerNodes" json:"workerNodes"`
+	OnCall                 bool                    `bson:"onCall" json:"onCall"`
+	UsefulLinks            []ClusterDataUsefulLink `bson:"usefulLinks" json:"usefulLinks"`
+	Contacts               []ClusterDataContact    `bson:"contacts" json:"contacts"`
+	Fury                   ClusterDataFury         `bson:"fury" json:"fury"`
 }
 
-type Contact struct {
-	FullName string `bson:"fullname" json:"fullname"`
-	Email    string `bson:"email" json:"email"`
-	Phone    string `bson:"phone" json:"phone"`
-	OnCall   bool   `bson:"onCall" json:"onCall"`
-}
 type ClusterGroupClusterStatus struct {
 	Name          string `bson:"name" json:"name"`
 	LastUpdatedAt string `bson:"lastUpdatedAt" json:"lastUpdatedAt"`
@@ -90,7 +84,7 @@ type ClusterGroupCluster struct {
 	Provider    string                    `bson:"provider" json:"provider"`
 	Environment string                    `bson:"environment" json:"environment"`
 	Status      ClusterGroupClusterStatus `bson:"status" json:"status"`
-	Contacts    []Contact                 `bson:"contacts" json:"contacts"`
+	Contacts    []ClusterDataContact      `bson:"contacts" json:"contacts"`
 }
 
 type ClusterGroup struct {
