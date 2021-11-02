@@ -73,6 +73,12 @@ type ClusterData struct {
 	Fury                   ClusterDataFury          `bson:"fury" json:"fury"`
 }
 
+type Contact struct {
+	FullName string `bson:"fullname" json:"fullname"`
+	Email    string `bson:"email" json:"email"`
+	Phone    string `bson:"phone" json:"phone"`
+	OnCall   string `bson:"onCall" json:"onCall"`
+}
 type ClusterGroupClusterStatus struct {
 	Name          string `bson:"name" json:"name"`
 	LastUpdatedAt string `bson:"lastUpdatedAt" json:"lastUpdatedAt"`
@@ -84,6 +90,7 @@ type ClusterGroupCluster struct {
 	Provider    string                    `bson:"provider" json:"provider"`
 	Environment string                    `bson:"environment" json:"environment"`
 	Status      ClusterGroupClusterStatus `bson:"status" json:"status"`
+	Contacts    []Contact                 `bson:"contacts" json:"contacts"`
 }
 
 type ClusterGroup struct {
