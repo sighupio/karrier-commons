@@ -39,16 +39,6 @@ type ClusterDataContact struct {
 	OnCall   bool   `bson:"onCall" json:"onCall"`
 }
 
-type ClusterDataFuryModule struct {
-	Name    string `bson:"name" json:"name"`
-	Version string `bson:"version" json:"version"`
-}
-
-type ClusterDataFury struct {
-	Version string                  `bson:"version" json:"version"`
-	Modules []ClusterDataFuryModule `bson:"modules" json:"modules"`
-}
-
 type ClusterDataHardwareInfo struct {
 	Quantity int    `bson:"quantity" json:"quantity"`
 	Unit     string `bson:"unit" json:"unit"`
@@ -70,7 +60,7 @@ type ClusterData struct {
 	OnCall                 bool                    `bson:"onCall" json:"onCall"`
 	UsefulLinks            []ClusterDataUsefulLink `bson:"usefulLinks" json:"usefulLinks"`
 	Contacts               []ClusterDataContact    `bson:"contacts" json:"contacts"`
-	Fury                   ClusterDataFury         `bson:"fury" json:"fury"`
+	Fury                   KFDReleaseDef           `bson:"fury" json:"fury"`
 }
 
 type ClusterGroupClusterStatus struct {
