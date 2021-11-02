@@ -6,7 +6,7 @@ package v1
 
 type ClusterInfo struct {
 	Name      string        `json:"name" bson:"name"`
-	ID        string        `json:"id" bson:"_id"`
+	ID        string        `json:"id" bson:"_id,omitempty"`
 	Slug      string        `json:"slug" bson:"slug"`
 	Endpoints Endpoints     `json:"apis" bson:"apis"`
 	Targets   []MongoTarget `json:"targets" bson:"targets"`
@@ -77,7 +77,7 @@ type Contact struct {
 	FullName string `bson:"fullname" json:"fullname"`
 	Email    string `bson:"email" json:"email"`
 	Phone    string `bson:"phone" json:"phone"`
-	OnCall   string `bson:"onCall" json:"onCall"`
+	OnCall   bool   `bson:"onCall" json:"onCall"`
 }
 type ClusterGroupClusterStatus struct {
 	Name          string `bson:"name" json:"name"`
