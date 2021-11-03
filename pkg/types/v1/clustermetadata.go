@@ -6,10 +6,15 @@ package v1
 
 // ClusterMetadata represents the basic information of a cluster.
 type ClusterMetadata struct {
-	Version    string   `json:"version"`    // The version of the Control Plane
-	Nodes      []Node   `json:"nodes"`      // List of Nodes of the cluster
-	Namespaces []string `json:"namespaces"` // Available namespaces in the cluster
-	Ingresses  []string `json:"ingresses"`  // Hostnames managed by the cluster
+	Version    string    `json:"version"`    // The version of the Control Plane
+	Nodes      []Node    `json:"nodes"`      // List of Nodes of the cluster
+	Namespaces []string  `json:"namespaces"` // Available namespaces in the cluster
+	Ingresses  []Ingress `json:"ingresses"`  // Hostnames managed by the cluster
+}
+
+type Ingress struct {
+	Name     string `json:"name"`
+	Hostname string `json:"hostname"`
 }
 
 // Node represents the basic information of a cluster node.
