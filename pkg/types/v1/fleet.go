@@ -44,6 +44,16 @@ type ClusterDataHardwareInfo struct {
 	Unit     string `bson:"unit" json:"unit"`
 }
 
+type ModuleDef struct {
+	Name    string `bson:"name"`
+	Version string `bson:"version"`
+}
+
+type ReleaseDef struct {
+	Version string      `bson:"version"`
+	Modules []ModuleDef `bson:"modules"`
+}
+
 type ClusterData struct {
 	ID                     string                  `bson:"_id,omitempty" json:"id"`
 	Name                   string                  `bson:"name" json:"name"`
@@ -60,7 +70,7 @@ type ClusterData struct {
 	OnCall                 bool                    `bson:"onCall" json:"onCall"`
 	UsefulLinks            []ClusterDataUsefulLink `bson:"usefulLinks" json:"usefulLinks"`
 	Contacts               []ClusterDataContact    `bson:"contacts" json:"contacts"`
-	Fury                   KFDReleaseDef           `bson:"fury" json:"fury"`
+	Fury                   ReleaseDef              `bson:"fury" json:"fury"`
 }
 
 type ClusterGroupClusterStatus struct {
