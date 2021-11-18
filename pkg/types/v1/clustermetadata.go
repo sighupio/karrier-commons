@@ -30,6 +30,7 @@ type Node struct {
 	Memory  string `json:"memory"`  // The amount of allocable Memory
 	Ready   bool   `json:"ready"`   // Mark if the node is in Ready state
 	Master  bool   `json:"master"`  // Mark if it belong to the control plane
+	Role    string `json:"role"`    // Role from label
 }
 
 // Pod represents the basic information of a pod.
