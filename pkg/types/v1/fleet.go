@@ -68,8 +68,7 @@ type ClusterData struct {
 	RAM                    ClusterDataHardwareInfo `bson:"ram" json:"ram"`
 	WorkerNodes            int                     `bson:"workerNodes" json:"workerNodes"`
 	OnCall                 bool                    `bson:"onCall" json:"onCall"`
-	UsefulLinks            []ClusterDataUsefulLink `bson:"usefulLinks" json:"usefulLinks"`
-	Contacts               []ClusterDataContact    `bson:"contacts" json:"contacts"`
+	Notes                  string                  `bson:"notes" json:"notes"`
 	Fury                   ReleaseDef              `bson:"fury" json:"fury"`
 }
 
