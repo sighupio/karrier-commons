@@ -61,7 +61,7 @@ type ClusterData struct {
 	Provider          string                   `bson:"provider" json:"provider"`
 	PkiCert           CertificateSpec          `bson:"pkiCert" json:"pkiCert"`
 	EtcdCert          CertificateSpec          `bson:"etcdCert" json:"etcdCert"`
-	ApplicationCert   CertificateSpec          `bson:"etcdCert" json:"applicationCert"`
+	ApplicationCert   CertificateSpec          `bson:"applicationCert" json:"applicationCert"`
 	KubernetesVersion string                   `bson:"kubernetesVersion" json:"kubernetesVersion"`
 	Os                string                   `bson:"os" json:"os"`
 	ContainerRuntime  string                   `bson:"containerRuntime" json:"containerRuntime"`
