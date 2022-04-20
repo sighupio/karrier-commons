@@ -28,8 +28,13 @@ type MongoTarget struct {
 }
 
 type ClusterDataUsefulLinks struct {
-	Name string `bson:"name" json:"name"`
-	Url  string `bson:"url" json:"url"`
+	Label string `bson:"label" json:"label"`
+	Links []Link `bson:"url" json:"url"`
+}
+
+type Link struct {
+	Name string   `bson:"name" json:"name"`
+	URLs []string `bson:"urls" json:"urls"`
 }
 
 type ClusterDataContacts struct {
@@ -55,23 +60,23 @@ type ClusterDataHardwareInfo struct {
 }
 
 type ClusterData struct {
-	Id                string                   `bson:"_id,omitempty" json:"id"`
-	Name              string                   `bson:"name" json:"name"`
-	Slug              string                   `bson:"slug" json:"slug"`
-	Provider          string                   `bson:"provider" json:"provider"`
-	PkiCert           CertificateSpec          `bson:"pkiCert" json:"pkiCert"`
-	EtcdCert          CertificateSpec          `bson:"etcdCert" json:"etcdCert"`
-	ApplicationCert   CertificateSpec          `bson:"applicationCert" json:"applicationCert"`
-	KubernetesVersion string                   `bson:"kubernetesVersion" json:"kubernetesVersion"`
-	Os                string                   `bson:"os" json:"os"`
-	ContainerRuntime  string                   `bson:"containerRuntime" json:"containerRuntime"`
-	Cpu               ClusterDataHardwareInfo  `bson:"cpu" json:"cpu"`
-	Ram               ClusterDataHardwareInfo  `bson:"ram" json:"ram"`
-	WorkerNodes       int                      `bson:"workerNodes" json:"workerNodes"`
-	OnCall            bool                     `bson:"onCall" json:"onCall"`
-	UsefulLinks       []ClusterDataUsefulLinks `bson:"usefulLinks" json:"usefulLinks"`
-	Contacts          []ClusterDataContacts    `bson:"contacts" json:"contacts"`
-	Fury              ClusterDataFury          `bson:"fury" json:"fury"`
+	Id                string                  `bson:"_id,omitempty" json:"id"`
+	Name              string                  `bson:"name" json:"name"`
+	Slug              string                  `bson:"slug" json:"slug"`
+	Provider          string                  `bson:"provider" json:"provider"`
+	PkiCert           CertificateSpec         `bson:"pkiCert" json:"pkiCert"`
+	EtcdCert          CertificateSpec         `bson:"etcdCert" json:"etcdCert"`
+	ApplicationCert   CertificateSpec         `bson:"applicationCert,omitempty" json:"applicationCert,omitempty"`
+	KubernetesVersion string                  `bson:"kubernetesVersion" json:"kubernetesVersion"`
+	Os                string                  `bson:"os" json:"os"`
+	ContainerRuntime  string                  `bson:"containerRuntime" json:"containerRuntime"`
+	Cpu               ClusterDataHardwareInfo `bson:"cpu" json:"cpu"`
+	Ram               ClusterDataHardwareInfo `bson:"ram" json:"ram"`
+	WorkerNodes       int                     `bson:"workerNodes" json:"workerNodes"`
+	OnCall            bool                    `bson:"onCall" json:"onCall"`
+	UsefulLinks       ClusterDataUsefulLinks  `bson:"usefulLinks" json:"usefulLinks"`
+	Contacts          []ClusterDataContacts   `bson:"contacts" json:"contacts"`
+	Fury              ClusterDataFury         `bson:"fury" json:"fury"`
 }
 
 type CertificateSpec struct {
