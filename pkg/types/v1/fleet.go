@@ -60,23 +60,31 @@ type ClusterDataHardwareInfo struct {
 }
 
 type ClusterData struct {
-	Id                string                  `bson:"_id,omitempty" json:"id"`
-	Name              string                  `bson:"name" json:"name"`
-	Slug              string                  `bson:"slug" json:"slug"`
-	Provider          string                  `bson:"provider" json:"provider"`
-	PkiCert           CertificateSpec         `bson:"pkiCert" json:"pkiCert"`
-	EtcdCert          CertificateSpec         `bson:"etcdCert" json:"etcdCert"`
-	ApplicationCert   CertificateSpec         `bson:"applicationCert,omitempty" json:"applicationCert,omitempty"`
-	KubernetesVersion string                  `bson:"kubernetesVersion" json:"kubernetesVersion"`
-	Os                string                  `bson:"os" json:"os"`
-	ContainerRuntime  string                  `bson:"containerRuntime" json:"containerRuntime"`
-	Cpu               ClusterDataHardwareInfo `bson:"cpu" json:"cpu"`
-	Ram               ClusterDataHardwareInfo `bson:"ram" json:"ram"`
-	WorkerNodes       int                     `bson:"workerNodes" json:"workerNodes"`
-	OnCall            bool                    `bson:"onCall" json:"onCall"`
-	UsefulLinks       ClusterDataUsefulLinks  `bson:"usefulLinks" json:"usefulLinks"`
-	Contacts          []ClusterDataContacts   `bson:"contacts" json:"contacts"`
-	Fury              ClusterDataFury         `bson:"fury" json:"fury"`
+	Id                string                  `json:"id"`
+	Name              string                  `json:"name"`
+	Slug              string                  `json:"slug"`
+	Provider          string                  `json:"provider"`
+	KubernetesVersion string                  `json:"kubernetesVersion"`
+	Os                string                  `json:"os"`
+	ContainerRuntime  string                  `json:"containerRuntime"`
+	Cpu               ClusterDataHardwareInfo `json:"cpu"`
+	Ram               ClusterDataHardwareInfo `json:"ram"`
+	PkiCert           CertificateSpec         `json:"pkiCert"`
+	EtcdCert          CertificateSpec         `json:"etcdCert"`
+	ApplicationCert   CertificateSpec         `json:"applicationCert"`
+	WorkerNodes       int                     `json:"workerNodes"`
+	Fury              ClusterDataFury         `json:"fury"`
+	OnCall            bool                    `json:"onCall"`
+	UsefulLinks       *ClusterDataUsefulLinks `json:"usefulLinks"`
+
+	Status ClusterStatus `json:"status"`
+	Tags   []string      `json:"tags"`
+	Notes  string        `json:"notes"`
+}
+
+type ClusterStatus struct {
+	Name          string `json:"name"`
+	LastUpdatedAt string `json:"lastUpdatedAt"`
 }
 
 type CertificateSpec struct {
