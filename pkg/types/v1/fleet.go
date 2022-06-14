@@ -75,7 +75,7 @@ type ClusterData struct {
 	WorkerNodes       int                     `json:"workerNodes"`
 	Fury              ClusterDataFury         `json:"fury"`
 	OnCall            bool                    `json:"onCall"`
-	UsefulLinks       *ClusterDataUsefulLinks `json:"usefulLinks"`
+	UsefulLinks       ClusterDataUsefulLinks  `json:"usefulLinks"`
 
 	Status ClusterStatus `json:"status"`
 	Tags   []string      `json:"tags"`
