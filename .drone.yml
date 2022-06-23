@@ -21,40 +21,6 @@ steps:
     depends_on:
       - clone
 
-  - name: prepare-go
-    image: quay.io/sighup/golang:1.18.1
-    volumes:
-      - name: gocache
-        path: /drone/tmp/go
-      - name: home
-        path: /root/
-    environment:
-      GOCACHE: /drone/src/.go/cache
-      GOMODCACHE: /drone/src/.go/modcache
-      GOTMPDIR: /drone/src/.go/tmp
-      NETRC_FILE:
-        from_secret: NETRC_FILE
-    commands:
-      - echo $${NETRC_FILE} > /root/.netrc
-      - cp -R /drone/tmp/go/ .go
-      - mkdir -p .go/cache .go/modcache .go/tmp
-      - go mod download
-    depends_on:
-      - clone
-
-  - name: build-go
-    image: quay.io/sighup/golang:1.18.1
-    environment:
-      GOCACHE: /drone/src/.go/cache
-      GOMODCACHE: /drone/src/.go/modcache
-      GOTMPDIR: /drone/src/.go/tmp
-      BUILD_OS: amd64
-    commands:
-      - if [[ $(uname -m) = "arm64" ]]; then export BUILD_OS=arm64; fi
-      - make build-go
-    depends_on:
-      - prepare-go
-
   - name: lint-go
     image: quay.io/sighup/golang:1.18.1
     environment:
@@ -64,17 +30,7 @@ steps:
     commands:
       - make lint-go
     depends_on:
-      - build-go
-
-  - name: update-go-cache
-    image: quay.io/sighup/dind-kind-kubectl-kustomize:0.12.0_1.23.0_3.10.0
-    volumes:
-      - name: gocache
-        path: /drone/tmp/go
-    commands:
-      - cp -R .go/* /drone/tmp/go
-    depends_on:
-      - build-image
+      - clone
 
   - name: test-unit
     image: quay.io/sighup/golang:1.18.1
@@ -85,7 +41,7 @@ steps:
     commands:
       - make test-unit
     depends_on:
-      - build-image
+      - clone
 
   - name: release
     image: registry.sighup.io/fury/drone-github-release:latest
@@ -97,6 +53,10 @@ steps:
       - export GITHUB_RELEASE_TITLE="Welcome $${DRONE_TAG} release"
       - export GITHUB_RELEASE_NOTE="docs/releases/$${DRONE_TAG}.md"
       - drone-github-release
+    depends_on:
+      - license-check
+      - lint-go
+      - test-unit
     when:
       event:
         - tag
