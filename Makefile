@@ -16,7 +16,6 @@ define run-docker
 		-e GOOS=linux \
 		-e GOPRIVATE="github.com/sighupio/*" \
 		-w /app \
-		-v ${KUBECONFIG}:/root/.kube/config \
 		-v ${NETRC_FILE}:/root/.netrc \
 		-v ${_PROJECT_DIRECTORY}:/app \
 		$(1) $(2)
@@ -105,7 +104,7 @@ test-unit:
 
 # Helpers
 
-%-docker: check-variable-KUBECONFIG check-variable-NETRC_FILE
+%-docker: check-variable-NETRC_FILE
 	$(call run-docker,${_GOLANG_IMAGE},make $*)
 
 check-variable-%: # detection of undefined variables.

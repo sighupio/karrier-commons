@@ -1,65 +1,227 @@
-# Copyright (c) 2021 SIGHUP s.r.l All rights reserved.
-# Use of this source code is governed by a BSD-style
-# license that can be found in the LICENSE file.
+# This file contains all available configuration options
+# with their default values (in comments).
 
----
-#########################
-#########################
-## Golang Linter rules ##
-#########################
-#########################
-
-# options for analysis running
+# Options for analysis running.
 run:
-  # include test files or not, default is true
-  tests: false
-  # timeout for analysis, e.g. 30s, 5m, default is 1m
-  timeout: 10m
+  timeout: 5m
+  skip-files:
+    - ".*\\.gen\\.go$"
+  modules-download-mode: readonly
 
-# configure golangci-lint
-# see https://github.com/golangci/golangci-lint/blob/master/.golangci.example.yml
-issues:
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - dupl
-        - goconst
+# output configuration options
+output:
+  sort-results: true
+
 linters:
-  disable-all: true
-  enable:
-    - ineffassign
-    - asciicheck
-    - dogsled
-    - dupl
+  # Enable all available linters.
+  # Default: false
+  enable-all: true
+  # Disable specific linter
+  # https://golangci-lint.run/usage/linters/#disabled-by-default-linters--e--enable
+  disable:
+    # not compatible with go 1.18
+    - bodyclose
+    - contextcheck
     - funlen
+    - gosimple
+    - nilerr
+    - noctx
+    - rowserrcheck
+    - sqlclosecheck
+    - staticcheck
+    - structcheck
+    - stylecheck
+    - tparallel
+    - unparam
+    - unused
+    - wastedassign
+    # deprecated
+    - golint
+    - interfacer
+    - maligned
+    - scopelint
+    # unused
+    - exhaustivestruct
     - gci
-    - gochecknoglobals
-    - gochecknoinits
-    - gocognit
-    - goconst
-    - gocyclo
-    - godot
-    - godox
-    - gofmt
     - goheader
-    - goimports
     - gomnd
     - gomodguard
-    - goprintffuncname
-    - lll
+    - importas
+    - ireturn
+    - makezero
     - misspell
-    - nakedret
-    - nestif
-    - nlreturn
-    - nolintlint
+    - paralleltest
     - prealloc
-    - scopelint
-    - testpackage
-    - whitespace
-    - wsl
+    - promlinter
     - revive
+    - tagliatelle
+    - typecheck
+    - varnamelen
+    - whitespace
+    - wrapcheck
 
 linters-settings:
-  gocyclo:
-    # minimal code complexity to report, 30 by default
-    min-complexity: 15
+  decorder:
+    disable-init-func-first-check: false
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+    disable-default-exclusions: false
+    exclude-functions: []
+  errchkjson:
+    check-error-free-encoding: false
+    report-no-exported: true
+  exhaustive:
+    check-generated: true
+    default-signifies-exhaustive: true
+  godot:
+    scope: all
+    exclude:
+      - "^fixme:"
+      - "^todo:"
+    capital: true
+    period: true
+  gofumpt:
+    lang-version: "1.18"
+    extra-rules: true
+  goimports:
+    local-prefixes: github.com/org/sighupio
+  govet:
+    check-shadowing: true
+  grouper:
+    const-require-single-const: true
+    const-require-grouping: false
+    import-require-single-import: true
+    import-require-grouping: false
+    var-require-single-var: true
+    var-require-grouping: false
+  nolintlint:
+    require-explanation: true
+    require-specific: true
+  revive:
+    enable-all-rules: true
+  varcheck:
+    exported-fields: true
+  varnamelen:
+    check-receiver: true
+    check-return: true
+    check-type-param: true
+    ignore-type-assert-ok: true
+    ignore-map-index-ok: true
+    ignore-chan-recv-ok: true
+    ignore-names:
+      - err
+    ignore-decls:
+      - c echo.Context
+      - t testing.T
+      - e error
+      - i int
+      - const C
+      - T any
+      - m map[string]int
+  wsl:
+    allow-cuddle-declarations: false
+    allow-multiline-assign: true
+    allow-separated-leading-comment: false
+    force-case-trailing-whitespace: 1
+    force-err-cuddling: true
+issues:
+  # List of regexps of issue texts to exclude.
+  #
+  # But independently of this option we use default exclude patterns,
+  # it can be disabled by `exclude-use-default: false`.
+  # To list all excluded by default patterns execute `golangci-lint run --help`
+  #
+  # Default: []
+  exclude: []
+
+  # Excluding configuration per-path, per-linter, per-text and per-source
+  exclude-rules:
+    # Exclude some linters from running on tests files.
+    - path: _test\.go
+      linters:
+        - gochecknoglobals
+        - cyclop
+        - dupl
+        - errcheck
+        - forcetypeassert
+        - gocyclo
+        - goerr113
+        - gosec
+        - lll
+        - maintidx
+
+    # Exclude `lll` issues for long lines with `go:generate`.
+    - linters:
+        - lll
+      source: "^//go:generate "
+
+  # Independently of option `exclude` we use default exclude patterns,
+  # it can be disabled by this option.
+  # To list all excluded by default patterns execute `golangci-lint run --help`.
+  # Default: true.
+  exclude-use-default: true
+
+  # If set to true exclude and exclude-rules regular expressions become case-sensitive.
+  # Default: false
+  exclude-case-sensitive: false
+
+  # The list of ids of default excludes to include or disable.
+  # Default: []
+  include: []
+
+  # Maximum issues count per one linter.
+  # Set to 0 to disable.
+  # Default: 50
+  max-issues-per-linter: 50
+
+  # Maximum count of issues with the same text.
+  # Set to 0 to disable.
+  # Default: 3
+  max-same-issues: 3
+
+  # Show only new issues: if there are unstaged changes or untracked files,
+  # only those changes are analyzed, else only changes in HEAD~ are analyzed.
+  # It's a super-useful option for integration of golangci-lint into existing large codebase.
+  # It's not practical to fix all existing issues at the moment of integration:
+  # much better don't allow issues in new code.
+  #
+  # Default: false.
+  new: false
+
+  # Show only new issues created after git revision `REV`.
+  # new-from-rev: HEAD
+
+  # Show only new issues created in git patch with set file path.
+  # new-from-patch: path/to/patch/file
+
+  # Fix found issues (if it's supported by the linter).
+  fix: false
+
+severity:
+  # Set the default severity for issues.
+  #
+  # If severity rules are defined and the issues do not match or no severity is provided to the rule
+  # this will be the default severity applied.
+  # Severities should match the supported severity names of the selected out format.
+  # - Code climate: https://docs.codeclimate.com/docs/issues#issue-severity
+  # - Checkstyle: https://checkstyle.sourceforge.io/property_types.html#severity
+  # - GitHub: https://help.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-error-message
+  #
+  # Default value is an empty string.
+  default-severity: error
+
+  # If set to true `severity-rules` regular expressions become case-sensitive.
+  # Default: false
+  case-sensitive: true
+
+  # When a list of severity rules are provided, severity information will be added to lint issues.
+  # Severity rules have the same filtering capability as exclude rules
+  # except you are allowed to specify one matcher per severity rule.
+  # Only affects out formats that support setting severity information.
+  #
+  # Default: []
+  rules:
+    - linters:
+      - dupl
+      severity: info
