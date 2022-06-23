@@ -51,7 +51,7 @@ func TestGetPodsfromJob(t *testing.T) {
 					Status: batchv1.JobStatus{},
 				},
 			},
-			want:    []corev1.Pod{},
+			want:    nil,
 			wantErr: false,
 		}, {
 			name: "One Pod",
@@ -91,7 +91,7 @@ func TestGetPodsfromJob(t *testing.T) {
 					Status: batchv1.JobStatus{},
 				},
 			},
-			want:    []corev1.Pod{},
+			want:    nil,
 			wantErr: false,
 		},
 	}
