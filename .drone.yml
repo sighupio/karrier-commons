@@ -12,10 +12,6 @@ clone:
 steps:
   - name: license-check
     image: quay.io/sighup/golang:1.18.1
-    environment:
-      GOCACHE: /drone/src/.go/cache
-      GOMODCACHE: /drone/src/.go/modcache
-      GOTMPDIR: /drone/src/.go/tmp
     commands:
       - make license-check
     depends_on:
@@ -23,10 +19,6 @@ steps:
 
   - name: lint-go
     image: quay.io/sighup/golang:1.18.1
-    environment:
-      GOCACHE: /drone/src/.go/cache
-      GOMODCACHE: /drone/src/.go/modcache
-      GOTMPDIR: /drone/src/.go/tmp
     commands:
       - make lint-go
     depends_on:
@@ -34,10 +26,6 @@ steps:
 
   - name: test-unit
     image: quay.io/sighup/golang:1.18.1
-    environment:
-      GOCACHE: /drone/src/.go/cache
-      GOMODCACHE: /drone/src/.go/modcache
-      GOTMPDIR: /drone/src/.go/tmp
     commands:
       - make test-unit
     depends_on:
