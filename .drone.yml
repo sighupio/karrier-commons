@@ -3,31 +3,89 @@
 # license that can be found in the LICENSE file.
 
 kind: pipeline
+type: docker
 name: Release
 
+clone:
+  depth: 1
+
 steps:
-  - &docker-test
-    name: license
-    image: docker:dind
-    pull: always
-    volumes:
-    - name: dockersock
-      path: /var/run/docker.sock
-    environment: &default-env
-      DOCKER_BUILDKIT: "1"
+  - name: license-check
+    image: quay.io/sighup/golang:1.18.1
+    environment:
+      GOCACHE: /drone/src/.go/cache
+      GOMODCACHE: /drone/src/.go/modcache
+      GOTMPDIR: /drone/src/.go/tmp
     commands:
-      - &requirements
-        apk add make bash util-linux
-      - &target
-        make $${DRONE_STEP_NAME}
-      - &clean-target
-        make clean-$${DRONE_STEP_NAME}
+      - make license-check
+    depends_on:
+      - clone
 
-  - <<: *docker-test
-    name: lint
+  - name: prepare-go
+    image: quay.io/sighup/golang:1.18.1
+    volumes:
+      - name: gocache
+        path: /drone/tmp/go
+      - name: home
+        path: /root/
+    environment:
+      GOCACHE: /drone/src/.go/cache
+      GOMODCACHE: /drone/src/.go/modcache
+      GOTMPDIR: /drone/src/.go/tmp
+      NETRC_FILE:
+        from_secret: NETRC_FILE
+    commands:
+      - echo $${NETRC_FILE} > /root/.netrc
+      - cp -R /drone/tmp/go/ .go
+      - mkdir -p .go/cache .go/modcache .go/tmp
+      - go mod download
+    depends_on:
+      - clone
 
-  - <<: *docker-test
-    name: test
+  - name: build-go
+    image: quay.io/sighup/golang:1.18.1
+    environment:
+      GOCACHE: /drone/src/.go/cache
+      GOMODCACHE: /drone/src/.go/modcache
+      GOTMPDIR: /drone/src/.go/tmp
+      BUILD_OS: amd64
+    commands:
+      - if [[ $(uname -m) = "arm64" ]]; then export BUILD_OS=arm64; fi
+      - make build-go
+    depends_on:
+      - prepare-go
+
+  - name: lint-go
+    image: quay.io/sighup/golang:1.18.1
+    environment:
+      GOCACHE: /drone/src/.go/cache
+      GOMODCACHE: /drone/src/.go/modcache
+      GOTMPDIR: /drone/src/.go/tmp
+    commands:
+      - make lint-go
+    depends_on:
+      - build-go
+
+  - name: update-go-cache
+    image: quay.io/sighup/dind-kind-kubectl-kustomize:0.12.0_1.23.0_3.10.0
+    volumes:
+      - name: gocache
+        path: /drone/tmp/go
+    commands:
+      - cp -R .go/* /drone/tmp/go
+    depends_on:
+      - build-image
+
+  - name: test-unit
+    image: quay.io/sighup/golang:1.18.1
+    environment:
+      GOCACHE: /drone/src/.go/cache
+      GOMODCACHE: /drone/src/.go/modcache
+      GOTMPDIR: /drone/src/.go/tmp
+    commands:
+      - make test-unit
+    depends_on:
+      - build-image
 
   - name: release
     image: registry.sighup.io/fury/drone-github-release:latest
@@ -47,3 +105,8 @@ volumes:
 - name: dockersock
   host:
     path: /var/run/docker.sock
+
+trigger:
+  event:
+    exclude:
+      - pull_request

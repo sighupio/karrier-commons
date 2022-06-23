@@ -12,7 +12,8 @@ import (
 )
 
 func (kc *KubernetesClient) GetService(ctx *context.Context, svcName string,
-	namespace string) (*corev1.Service, error) {
+	namespace string,
+) (*corev1.Service, error) {
 	service, err := kc.Client.CoreV1().Services(namespace).Get(*ctx,
 		svcName, metav1.GetOptions{})
 
@@ -20,7 +21,8 @@ func (kc *KubernetesClient) GetService(ctx *context.Context, svcName string,
 }
 
 func (kc *KubernetesClient) GetEndpoints(ctx *context.Context, service *corev1.Service,
-	namespace string) (*corev1.Endpoints, error) {
+	namespace string,
+) (*corev1.Endpoints, error) {
 	// Retrieve all the endpoints corresponding to the service
 	// Name of the endpoint will always match that of the svc
 	endpoint, err := kc.Client.CoreV1().Endpoints(namespace).Get(*ctx,

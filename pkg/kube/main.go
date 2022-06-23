@@ -106,7 +106,6 @@ func (kc *KubernetesClient) extClusterConfig() (*rest.Config, error) {
 	if home := os.Getenv("HOME"); home != "" {
 		kubeConfigPath := filepath.Join(home, ".kube", "config")
 		config, err := kc.getConfigFromFile(kubeConfigPath)
-
 		if err != nil {
 			return nil, err
 		}

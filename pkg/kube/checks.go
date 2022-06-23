@@ -9,7 +9,6 @@ import "context"
 func (kc *KubernetesClient) Healthz(ctx *context.Context) error {
 	path := "/healthz"
 	content, err := kc.Client.Discovery().RESTClient().Get().AbsPath(path).DoRaw(*ctx)
-
 	if err != nil {
 		return err
 	}

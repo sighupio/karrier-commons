@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:build unit
+
 package kube
 
 import (
-    "context"
+	"context"
 	"testing"
 
 	corev1 "k8s.io/api/core/v1"
@@ -47,16 +49,24 @@ func TestGetEndpoints(t *testing.T) {
 	labels02 := make(map[string]string)
 	labels02["app2"] = "invalid"
 
-	podObj := &corev1.Pod{ObjectMeta: metav1.ObjectMeta{Name: "my-pod",
-		Namespace: "myNs", Labels: labels}}
+	podObj := &corev1.Pod{ObjectMeta: metav1.ObjectMeta{
+		Name:      "my-pod",
+		Namespace: "myNs", Labels: labels,
+	}}
 
-	svcObj := &corev1.Service{ObjectMeta: metav1.ObjectMeta{Name: "mySvc", Namespace: "myNs"},
-		Spec: corev1.ServiceSpec{Selector: labels}}
-	badSvcObj := &corev1.Service{ObjectMeta: metav1.ObjectMeta{Name: "mySvc2", Namespace: "myNs"},
-		Spec: corev1.ServiceSpec{Selector: labels02}}
+	svcObj := &corev1.Service{
+		ObjectMeta: metav1.ObjectMeta{Name: "mySvc", Namespace: "myNs"},
+		Spec:       corev1.ServiceSpec{Selector: labels},
+	}
+	badSvcObj := &corev1.Service{
+		ObjectMeta: metav1.ObjectMeta{Name: "mySvc2", Namespace: "myNs"},
+		Spec:       corev1.ServiceSpec{Selector: labels02},
+	}
 
-	epObj := &corev1.Endpoints{ObjectMeta: metav1.ObjectMeta{Name: "mySvc",
-		Namespace: "myNs", Labels: labels}, Subsets: []corev1.EndpointSubset{}}
+	epObj := &corev1.Endpoints{ObjectMeta: metav1.ObjectMeta{
+		Name:      "mySvc",
+		Namespace: "myNs", Labels: labels,
+	}, Subsets: []corev1.EndpointSubset{}}
 	fakeKC := &KubernetesClient{Client: fake.NewSimpleClientset(podObj,
 		svcObj, epObj, badSvcObj)}
 

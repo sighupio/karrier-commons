@@ -1,46 +1,112 @@
-.DEFAULT_GOAL: help
-SHELL := /bin/bash
+_PROJECT_DIRECTORY = $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
+_GOLANG_IMAGE = quay.io/sighup/golang:1.18.1
+_PROJECTNAME = fip-commons
+_GOARCH = "amd64"
 
-PROJECTNAME := "fip-commons"
+ifeq ("$(shell uname -m)", "arm64")
+	_GOARCH = "arm64"
+endif
 
-.PHONY: help
-all: help
-help: Makefile
-	@echo
-	@echo " Choose a command to run in "$(PROJECTNAME)":"
-	@echo
-	@sed -n 's/^##//p' $< | column -t -s ':' |  sed -e 's/^/ /'
-	@echo
+#1: docker image
+#2: make target
+define run-docker
+	@docker run --rm \
+		-e CGO_ENABLED=0 \
+		-e GOARCH=${_GOARCH} \
+		-e GOOS=linux \
+		-e GOPRIVATE="github.com/sighupio/*" \
+		-w /app \
+		-v ${KUBECONFIG}:/root/.kube/config \
+		-v ${NETRC_FILE}:/root/.netrc \
+		-v ${_PROJECT_DIRECTORY}:/app \
+		$(1) $(2)
+endef
+
+.PHONY: env
+
+env:
+	@echo 'export CGO_ENABLED=0'
+	@echo 'export GOARCH=${_GOARCH}'
+	@echo 'export GOPRIVATE=github.com/sighupio/*'
+
+.PHONY: mod-download mod-tidy mod-verify
+
+mod-download:
+	@go mod download
+
+mod-tidy:
+	@go mod tidy
+
+mod-verify:
+	@go mod verify
+
+.PHONY: mod-check-upgrades mod-upgrade
+
+mod-check-upgrades:
+	@go list -mod=readonly -u -f "{{if (and (not (or .Main .Indirect)) .Update)}}{{.Path}}: {{.Version}} -> {{.Update.Version}}{{end}}" -m all
+
+mod-upgrade:
+	@go get -u ./... && go mod tidy
+
+.PHONY: generate license
+
+generate:
+	@go generate ./...
+
+license-add:
+	@addlicense -c "SIGHUP s.r.l" -y 2017-present -v -l bsd \
+	-ignore "scripts/e2e/libs/**/*" \
+	-ignore "vendor/**/*" \
+	-ignore "*.gen.go" \
+	-ignore ".idea/*" \
+	-ignore ".vscode/*" \
+	-ignore "*.js" \
+	-ignore "kind-config.yaml" \
+	-ignore ".husky/**/*" \
+	-ignore ".go/**/*" \
+	.
+
+license-check:
+	@addlicense -c "SIGHUP s.r.l" -y 2017-present -v -l bsd \
+	-ignore "scripts/e2e/libs/**/*" \
+	-ignore "vendor/**/*" \
+	-ignore "*.gen.go" \
+	-ignore ".idea/*" \
+	-ignore ".vscode/*" \
+	-ignore "*.js" \
+	-ignore "kind-config.yaml" \
+	-ignore ".husky/**/*" \
+	-ignore ".go/**/*" \
+	--check .
+
+.PHONY: fmt fumpt
+
+fmt:
+	@find . -name *.go -type f -not -path '*/vendor/*' \
+	| sed 's/^\.\///g' \
+	| xargs -I {} sh -c 'echo "formatting {}.." && gofmt -w -s {}'
+
+fumpt:
+	@find . -name *.go -type f -not -path '*/vendor/*' \
+	| sed 's/^\.\///g' \
+	| xargs -I {} sh -c 'echo "formatting {}.." && gofumpt -w -extra {}'
+
+.PHONY: lint lint-go
+
+lint: lint-go
+
+lint-go:
+	@golangci-lint -v run --color=always --config=${_PROJECT_DIRECTORY}/.rules/.golangci.yml ./...
+
+.PHONY: test-unit
+
+test-unit:
+	@gotestsum --no-color=false -- -tags=unit ./...
+
+# Helpers
+
+%-docker: check-variable-KUBECONFIG check-variable-NETRC_FILE
+	$(call run-docker,${_GOLANG_IMAGE},make $*)
 
 check-variable-%: # detection of undefined variables.
 	@[[ "${${*}}" ]] || (echo '*** Please define variable `${*}` ***' && exit 1)
-
-optional-variable-%: # detection of undefined variables.
-	@[[ "${${*}}" ]] || (echo '*** Variable `${*}` is optional. Make sure you understand how to use it ***')
-
-check-%: # detection of required software.
-	@which ${*} > /dev/null || (echo '*** Please install `${*}` ***' && exit 1)
-
-## init: Init the project. GITHUB_PROJECT=demo make init
-init: check-variable-GITHUB_PROJECT
-	@test -f ./scripts/init.sh && ./scripts/init.sh ${GITHUB_PROJECT} || echo "Project already initialized with name ${GITHUB_PROJECT}"
-
-## drone-init: Init the drone-project. GITHUB_PROJECT=demo GITHUB_TOKEN=123token321 DRONE_TOKEN=tokenhere REGISTRY=registry.sighup.io REGISTRY_USER=robotuser REGISTRY_PASSWORD=thepassword make drone-init
-drone-init: check-variable-GITHUB_PROJECT check-variable-GITHUB_TOKEN check-variable-DRONE_TOKEN check-variable-REGISTRY check-variable-REGISTRY_USER check-variable-REGISTRY_PASSWORD
-	@test -f ./scripts/drone-init.sh && ./scripts/drone-init.sh ${GITHUB_PROJECT} ${GITHUB_TOKEN} ${DRONE_TOKEN} ${REGISTRY} ${REGISTRY_USER} ${REGISTRY_PASSWORD} || echo "Drone project already initialized with name ${GITHUB_PROJECT}"
-
-## lint: Run the policeman over the repository
-lint: check-docker
-	@docker build --no-cache --pull --target linter -f build/builder/Dockerfile -t ${PROJECTNAME}:local-lint .
-
-## test: Run unit testing
-test: check-docker
-	@docker build --no-cache --pull --target tester -f build/builder/Dockerfile -t ${PROJECTNAME}:local-test .
-
-## license: Check license headers are in-place in all files in the project
-license: check-docker
-	@docker build --no-cache --pull --target license -f build/builder/Dockerfile -t ${PROJECTNAME}:local-license .
-
-## clean-%: Clean the container image resulting from another target. make build clean-build
-clean-%:
-	@docker rmi -f ${PROJECTNAME}:local-${*}

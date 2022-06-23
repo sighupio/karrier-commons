@@ -17,7 +17,7 @@ import (
 )
 
 // GetJob returns the job by namespace and name.
-func GetJob(ctx context.Context, kc *kube.KubernetesClient, namespace string, name string) (*batchv1.Job, error) {
+func GetJob(ctx context.Context, kc *kube.KubernetesClient, namespace, name string) (*batchv1.Job, error) {
 	job, err := kc.Client.BatchV1().Jobs(namespace).Get(ctx, name, v1.GetOptions{})
 	if err != nil {
 		return nil, err
@@ -33,7 +33,6 @@ func GetPodsfromJob(ctx context.Context, kc *kube.KubernetesClient, job batchv1.
 		LabelSelector: labels.Set(labelSelector.MatchLabels).String(),
 		Limit:         int64(*job.Spec.BackoffLimit),
 	})
-
 	if err != nil {
 		return nil, err
 	}
