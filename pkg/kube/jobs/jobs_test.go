@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:build unit
+
 package jobs
 
 import (
@@ -49,7 +51,7 @@ func TestGetPodsfromJob(t *testing.T) {
 					Status: batchv1.JobStatus{},
 				},
 			},
-			want:    []corev1.Pod{},
+			want:    nil,
 			wantErr: false,
 		}, {
 			name: "One Pod",
@@ -89,7 +91,7 @@ func TestGetPodsfromJob(t *testing.T) {
 					Status: batchv1.JobStatus{},
 				},
 			},
-			want:    []corev1.Pod{},
+			want:    nil,
 			wantErr: false,
 		},
 	}

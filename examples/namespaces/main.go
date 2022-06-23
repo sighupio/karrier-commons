@@ -31,7 +31,6 @@ func main() {
 	// Create the client using the library
 	k := kube.KubernetesClient{KubeConfig: kubeConfigPath}
 	err := k.Init()
-
 	if err != nil {
 		fmt.Println("error. Something happened while trying to get connection to the API Server")
 		os.Exit(1)

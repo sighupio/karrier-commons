@@ -3,31 +3,33 @@
 # license that can be found in the LICENSE file.
 
 kind: pipeline
+type: docker
 name: Release
 
+clone:
+  depth: 1
+
 steps:
-  - &docker-test
-    name: license
-    image: docker:dind
-    pull: always
-    volumes:
-    - name: dockersock
-      path: /var/run/docker.sock
-    environment: &default-env
-      DOCKER_BUILDKIT: "1"
+  - name: license-check
+    image: quay.io/sighup/golang:1.18.1
     commands:
-      - &requirements
-        apk add make bash util-linux
-      - &target
-        make $${DRONE_STEP_NAME}
-      - &clean-target
-        make clean-$${DRONE_STEP_NAME}
+      - make license-check
+    depends_on:
+      - clone
 
-  - <<: *docker-test
-    name: lint
+  - name: lint-go
+    image: quay.io/sighup/golang:1.18.1
+    commands:
+      - make lint-go
+    depends_on:
+      - clone
 
-  - <<: *docker-test
-    name: test
+  - name: test-unit
+    image: quay.io/sighup/golang:1.18.1
+    commands:
+      - make test-unit
+    depends_on:
+      - clone
 
   - name: release
     image: registry.sighup.io/fury/drone-github-release:latest
@@ -39,6 +41,10 @@ steps:
       - export GITHUB_RELEASE_TITLE="Welcome $${DRONE_TAG} release"
       - export GITHUB_RELEASE_NOTE="docs/releases/$${DRONE_TAG}.md"
       - drone-github-release
+    depends_on:
+      - license-check
+      - lint-go
+      - test-unit
     when:
       event:
         - tag
@@ -47,3 +53,8 @@ volumes:
 - name: dockersock
   host:
     path: /var/run/docker.sock
+
+trigger:
+  event:
+    exclude:
+      - pull_request

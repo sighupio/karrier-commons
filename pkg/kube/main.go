@@ -5,12 +5,12 @@
 package kube
 
 import (
-	"fmt"
+	"errors"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 
-	log "github.com/sirupsen/logrus"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
@@ -18,12 +18,17 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
+//nolint:varcheck // the following consts are exported, so they could be used by client code. Lint is wrong here.
 const (
 	// KfipBaseLabel use this label as base of other labels like check or group.
 	KfipBaseLabel = "kfip.sighup.io"
 
 	// AppBaseLabel use this label as base of other labels like name or component.
 	AppBaseLabel = "app.kubernetes.io"
+)
+
+var ErrClusterConfig = errors.New(
+	"cannot configure external cluster configuration from the default $HOME/.kube/config path",
 )
 
 // KubernetesClient represents the Kubernetes configuration of the project.
@@ -45,14 +50,14 @@ func (kc *KubernetesClient) Init() error {
 	if kc.KubeConfig != "" {
 		config, err = kc.getConfigFromFile(kc.KubeConfig)
 	} else {
-		// if no kubeconfigfile is provided creates the in-cluster config
+		// If no kubeconfigfile is provided creates the in-cluster config.
 		config, err = kc.inClusterConfig()
 
 		if err != nil {
-			log.Errorf("In-cluster config failed with err: %s", err)
+			log.Printf("ERROR: in-cluster config failed with err: %s\n", err)
 
-			// If inCluster config does not work, try with the default kube config path
-			log.Info("Trying to connect to cluster using default kubeconfig(`.kube/config`)")
+			// If inCluster config does not work, try with the default kube config path.
+			log.Println("INFO: Trying to connect to cluster using default kubeconfig(`.kube/config`)")
 			config, err = kc.extClusterConfig()
 		}
 	}
@@ -63,7 +68,7 @@ func (kc *KubernetesClient) Init() error {
 
 	kc.config = config
 
-	// return k8s client and err
+	// Return k8s client and err.
 	client, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		return err
@@ -94,27 +99,17 @@ func (kc *KubernetesClient) Config() *rest.Config {
 }
 
 func (kc *KubernetesClient) inClusterConfig() (*rest.Config, error) {
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		return nil, err
-	}
-
-	return config, nil
+	return rest.InClusterConfig()
 }
 
 func (kc *KubernetesClient) extClusterConfig() (*rest.Config, error) {
 	if home := os.Getenv("HOME"); home != "" {
 		kubeConfigPath := filepath.Join(home, ".kube", "config")
-		config, err := kc.getConfigFromFile(kubeConfigPath)
 
-		if err != nil {
-			return nil, err
-		}
-
-		return config, nil
+		return kc.getConfigFromFile(kubeConfigPath)
 	}
 
-	return nil, fmt.Errorf("can not configure external cluster configuration from the default $HOME/.kube/config path")
+	return nil, ErrClusterConfig
 }
 
 func (kc *KubernetesClient) getConfigFromFile(kubeConfigPath string) (*rest.Config, error) {

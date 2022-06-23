@@ -4,19 +4,22 @@
 
 package kube
 
-import "context"
+import (
+	"context"
+	"errors"
+	"fmt"
+)
+
+var ErrHealtzResponse = errors.New("expected healthz response's content to be 'ok'")
 
 func (kc *KubernetesClient) Healthz(ctx *context.Context) error {
-	path := "/healthz"
-	content, err := kc.Client.Discovery().RESTClient().Get().AbsPath(path).DoRaw(*ctx)
-
+	content, err := kc.Client.Discovery().RESTClient().Get().AbsPath("/healthz").DoRaw(*ctx)
 	if err != nil {
 		return err
 	}
 
-	contentStr := string(content)
-	if contentStr != "ok" {
-		return err
+	if string(content) != "ok" {
+		return fmt.Errorf("%w, got '%s'", ErrHealtzResponse, string(content))
 	}
 
 	return nil

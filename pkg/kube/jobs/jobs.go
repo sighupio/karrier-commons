@@ -16,39 +16,32 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 )
 
-// GetJob returns the job by namespace and name.
-func GetJob(ctx context.Context, kc *kube.KubernetesClient, namespace string, name string) (*batchv1.Job, error) {
-	job, err := kc.Client.BatchV1().Jobs(namespace).Get(ctx, name, v1.GetOptions{})
-	if err != nil {
-		return nil, err
-	}
+var ErrJobDoesNotBelongToCronJob = errors.New("job does not belongs to a cronjob")
 
-	return job, nil
+// GetJob returns the job by namespace and name.
+func GetJob(ctx context.Context, kc *kube.KubernetesClient, namespace, name string) (*batchv1.Job, error) {
+	return kc.Client.BatchV1().Jobs(namespace).Get(ctx, name, v1.GetOptions{})
 }
 
 // GetPodsfromJob returns a list of Pods from a specific job.
 func GetPodsfromJob(ctx context.Context, kc *kube.KubernetesClient, job batchv1.Job) ([]corev1.Pod, error) {
 	labelSelector := v1.LabelSelector{MatchLabels: map[string]string{"job-name": job.Name}}
+
 	podList, err := kc.Client.CoreV1().Pods(job.Namespace).List(ctx, v1.ListOptions{
 		LabelSelector: labels.Set(labelSelector.MatchLabels).String(),
 		Limit:         int64(*job.Spec.BackoffLimit),
 	})
-
 	if err != nil {
 		return nil, err
 	}
 
-	if len(podList.Items) > 0 {
-		return podList.Items, nil
-	}
-
-	return make([]corev1.Pod, 0), nil
+	return podList.Items, nil
 }
 
 // GetCronJobFromJob returns the parent cronjob of the job.
 func GetCronJobFromJob(ctx context.Context, kc *kube.KubernetesClient, job batchv1.Job) (*batchv1beta1.CronJob, error) {
 	if len(job.OwnerReferences) == 0 {
-		return nil, errors.New("job does not belongs to a cronjob")
+		return nil, ErrJobDoesNotBelongToCronJob
 	}
 
 	var cronJobName string
@@ -59,10 +52,5 @@ func GetCronJobFromJob(ctx context.Context, kc *kube.KubernetesClient, job batch
 		}
 	}
 
-	cj, err := kc.Client.BatchV1beta1().CronJobs(job.Namespace).Get(ctx, cronJobName, v1.GetOptions{})
-	if err != nil {
-		return nil, err
-	}
-
-	return cj, nil
+	return kc.Client.BatchV1beta1().CronJobs(job.Namespace).Get(ctx, cronJobName, v1.GetOptions{})
 }
