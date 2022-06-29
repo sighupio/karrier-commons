@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/sighupio/fip-commons/pkg/kube"
+	"github.com/sighupio/karrier-commons/pkg/kube"
 	batchv1 "k8s.io/api/batch/v1"
 	batchv1beta1 "k8s.io/api/batch/v1beta1"
 	corev1 "k8s.io/api/core/v1"

@@ -1,4 +1,4 @@
-module github.com/sighupio/fip-commons
+module github.com/sighupio/karrier-commons
 
 go 1.18
 

@@ -62,7 +62,7 @@ linters:
     - typecheck
     - varnamelen
     - whitespace
-    # fip-common specific
+    # karrier-commons specific
     - wrapcheck
 
 linters-settings:

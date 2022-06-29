@@ -18,15 +18,6 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-//nolint:varcheck // the following consts are exported, so they could be used by client code. Lint is wrong here.
-const (
-	// KfipBaseLabel use this label as base of other labels like check or group.
-	KfipBaseLabel = "kfip.sighup.io"
-
-	// AppBaseLabel use this label as base of other labels like name or component.
-	AppBaseLabel = "app.kubernetes.io"
-)
-
 var ErrClusterConfig = errors.New(
 	"cannot configure external cluster configuration from the default $HOME/.kube/config path",
 )

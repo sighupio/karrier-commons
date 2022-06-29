@@ -1,6 +1,6 @@
 _PROJECT_DIRECTORY = $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 _GOLANG_IMAGE = quay.io/sighup/golang:1.18.1
-_PROJECTNAME = fip-commons
+_PROJECTNAME = karrier-commons
 _GOARCH = "amd64"
 
 ifeq ("$(shell uname -m)", "arm64")
