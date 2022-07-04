@@ -76,6 +76,7 @@ type ClusterData struct {
 	Fury              ClusterDataFury         `bson:"fury" json:"fury"`
 	OnCall            bool                    `bson:"onCall" json:"onCall"`
 	UsefulLinks       ClusterDataUsefulLinks  `bson:"usefulLinks" json:"usefulLinks"`
+	Environment       string                  `bson:"environment" json:"environment"`
 
 	Status ClusterStatus `bson:"status" json:"status"`
 	Tags   []string      `bson:"tags" json:"tags"`
