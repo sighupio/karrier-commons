@@ -61,6 +61,7 @@ type ClusterDataHardwareInfo struct {
 
 type ClusterData struct {
 	Id                string                  `bson:"_id,omitempty" json:"id"`
+	Uuid              string                  `bson:"uuid" json:"uuid"`
 	Name              string                  `bson:"name" json:"name"`
 	Slug              string                  `bson:"slug" json:"slug"`
 	Provider          string                  `bson:"provider" json:"provider"`
