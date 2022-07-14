@@ -80,8 +80,19 @@ type ClusterData struct {
 	Environment       string                  `bson:"environment" json:"environment"`
 
 	Status ClusterStatus `bson:"status" json:"status"`
-	Tags   []string      `bson:"tags" json:"tags"`
-	Notes  string        `bson:"notes" json:"notes"`
+
+	GitRepository       string                `bson:"gitRepository" json:"gitRepository"`
+	KubeConfigPath      string                `bson:"kubeconfigPath" json:"kubeconfigPath"`
+	GitCryptName        string                `bson:"gitCryptName" json:"gitCryptName"`
+	ProviderCredentials []ProviderCredentials `bson:"providerCredentials" json:"providerCredentials"`
+
+	Tags  []string `bson:"tags" json:"tags"`
+	Notes string   `bson:"notes" json:"notes"`
+}
+
+type ProviderCredentials struct {
+	ProviderName    string `bson:"providerName" json:"providerName"`
+	CredentialsName string `bson:"credentialsName" json:"credentialsName"`
 }
 
 type ClusterStatus struct {
