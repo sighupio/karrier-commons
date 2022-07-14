@@ -79,7 +79,7 @@ type ClusterData struct {
 	UsefulLinks       ClusterDataUsefulLinks  `bson:"usefulLinks" json:"usefulLinks"`
 	Environment       string                  `bson:"environment" json:"environment"`
 
-	Status ClusterStatus `bson:"status" json:"status"`
+	Status []HealthCheck `bson:"status" json:"status"`
 
 	GitRepository       string                `bson:"gitRepository" json:"gitRepository"`
 	KubeConfigPath      string                `bson:"kubeconfigPath" json:"kubeconfigPath"`
@@ -95,9 +95,26 @@ type ProviderCredentials struct {
 	CredentialsName string `bson:"credentialsName" json:"credentialsName"`
 }
 
-type ClusterStatus struct {
-	Name          string `bson:"name" json:"name"`
-	LastUpdatedAt string `bson:"lastUpdatedAt" json:"lastUpdatedAt"`
+type HealthCheck struct {
+	Category   string       `json:"category"`
+	Severities SeveritySpec `json:"severities"`
+	Alerts     []Alert      `json:"alerts"`
+}
+
+type Alert struct {
+	Severity string `json:"severity"`
+	Name     string `json:"name"`
+	Message  string `json:"message"`
+	URL      string `json:"url"`
+}
+
+type SeveritySpec struct {
+	Critical SeverityCount `json:"CRITICAL,omitempty"`
+	Warning  SeverityCount `json:"WARNING,omitempty"`
+}
+
+type SeverityCount struct {
+	Count int `json:"count"`
 }
 
 type CertificateSpec struct {
