@@ -79,8 +79,9 @@ type ClusterData struct {
 	UsefulLinks       ClusterDataUsefulLinks  `bson:"usefulLinks" json:"usefulLinks"`
 	Environment       string                  `bson:"environment" json:"environment"`
 
-	Status    []HealthCheck `bson:"status" json:"status"`
-	CreatedAt string        `bson:"createdAt" json:"createdAt"`
+	Status       ClusterStatus `bson:"status" json:"status"`
+	HealthChecks []HealthCheck `bson:"healthChecks" json:"healthChecks"`
+	CreatedAt    string        `bson:"createdAt" json:"createdAt"`
 
 	GitRepository       string                `bson:"gitRepository" json:"gitRepository"`
 	KubeConfigPath      string                `bson:"kubeconfigPath" json:"kubeconfigPath"`
@@ -89,6 +90,11 @@ type ClusterData struct {
 
 	Tags  []string `bson:"tags" json:"tags"`
 	Notes string   `bson:"notes" json:"notes"`
+}
+
+type ClusterStatus struct {
+	Name          string `bson:"name" json:"name"`
+	LastUpdatedAt string `bson:"lastUpdatedAt" json:"lastUpdatedAt"`
 }
 
 type ProviderCredentials struct {
