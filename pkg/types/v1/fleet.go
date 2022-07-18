@@ -98,8 +98,8 @@ type ClusterStatus struct {
 }
 
 type ProviderCredentials struct {
-	ProviderName    string `bson:"providerName" json:"providerName"`
-	CredentialsName string `bson:"credentialsName" json:"credentialsName"`
+	ProviderName   string `bson:"providerName" json:"providerName"`
+	CredentialName string `bson:"credentialName" json:"credentialName"`
 }
 
 type HealthCheck struct {
